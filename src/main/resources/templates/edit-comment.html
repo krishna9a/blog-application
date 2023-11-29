@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <link type="text/css" rel="stylesheet" th:href="@{../css/post.css}">
+</head>
+
+<body>
+<header>
+    <h1>Blog</h1>
+    <div>
+        <a th:href="@{/logout}">Logout</a>
+        <a th:href="@{/}">Home</a>
+    </div>
+</header>
+
+<section>
+    <h1 id="title" th:text="${post.title}"></h1>
+    <div id="blogInfo">
+        <span th:text="${post.author}"></span>
+        <span th:text="${#temporals.format(post.publishedAt, 'dd/MM/yyyy')}"></span>
+    </div>
+    <p class="blogContent" th:text="${post.content}"></p>
+</section>
+
+<div th:each="comment: ${post.Comments}" class="comment">
+    <div class="comment-field">
+        <p class="user-name" th:text="${comment.name}"></p>
+        <p th:text="${#temporals.format(comment.updatedAt, 'dd/MM/yyyy')}"></p>
+    </div>
+    <div class="comment-field" th:if="${comment.id == commentId}">
+        <form th:action="@{/update-comment}" method="post">
+            <input type="hidden" name="id" th:value="${comment.id}">
+            <input type="text" name="content" th:value="${comment.commentContent}">
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div class="comment-field" th:if="${comment.id != commentId}">
+        <p th:text="${comment.commentContent}"></p>
+    </div>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" th:href="@{../css/home.css}" />
+    <style>
+
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>My Blog Application</h1>
+        <div>
+            <a th:if="${user}!=null" th:href="@{/my-posts}">My Posts </a>
+            <a th:if="${user}!=null" th:href="@{/create-post}">New Blog</a>
+            <form th:action="@{/search}" method="get">
+                <input type="text" placeholder="Search" name="keyword" th:value="${keyword}">
+                <button type="submit">Search</button>
+            </form>
+            <a th:if="${user}==null" th:href="@{/login}">Login</a>
+            <a th:if="${user}!=null" th:href="@{/logout}">Logout</a>
+            <a th:if="${url}=='/my-posts'" th:href="@{/}">Home</a>
+        </div>
+    </header>
+
+        <div th:if="${url}!='/my-posts'" class="filter-nav">
+            <div  class="dropdown" >
+                <button class="drop-btn">Filter</button>
+                <div class="dropdown-content">
+                    <form th:action="@{/filter}" method="get">
+                        <div class="category">
+                            <h5>Tags:</h5>
+                            <div th:each="tag : ${tags}" class="checkbox-inline">
+                                <input type="checkbox" id="tag${tag.id}" name="tags" th:value="${tag.id}">
+                                <label th:for="${'tag'+ tag.id}" th:text="${tag.name}"></label>
+                            </div>
+                        </div>
+
+                        <div class="category">
+                            <h5>Authors:</h5>
+                            <div th:each="author : ${authors}" class="checkbox-inline">
+                                <input type="checkbox" id="author${author}" name="authors" th:value="${author}">
+                                <label th:for="${'author' + author}" th:text="${author}"></label>
+                            </div>
+                        </div>
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="drop-btn">Sort Order</button>
+                <div class="dropdown-content sort">
+                    <a th:href="@{|${url}sort=asc|}">Oldest First</a>
+                    <a th:href="@{|${url}sort=desc|}">Newest First</a>
+                </div>
+            </div>
+
+        </div>
+    <section>
+        <div class="blog" th:each="post : ${posts}">
+            <h1 class="title" th:text="${post.title}"></h1>
+            <span th:text="${post.author}"></span>
+            <span th:text="${#temporals.format(post.publishedAt, 'dd/MM/yyyy hh:mm a')}"></span>
+            <p class="excerpt" th:text="${post.excerpt}"></p>
+            <span class="tags" th:each="tag : ${post.tags}" th:text="${tag.name}"> </span>
+            <a class="read-more" th:href="@{/post/{id}(id=${post.id})}">Read More</a>
+        </div>
+    </section>
+    <footer th:if="${url}!='/my-posts'" >
+        <div class="footer-links">
+            <a th:href="@{${url}(sort=${sort},page=${currentPage - 1})}"> &lt; Previous</a>
+        </div>
+        <div class="footer-links">
+            <a th:href="@{${url}(sort=${sort},page=${currentPage +1})}"> Next &gt;</a>
+        </div>
+    </footer>
+
+</body>
+
+</html>

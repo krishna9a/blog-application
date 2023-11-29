@@ -1,0 +1,50 @@
+ body {
+           font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+       }
+
+       form {
+           max-width: 600px;
+           margin: auto;
+           border: 1px solid black;
+           padding: 20px;
+       }
+
+       .header {
+           text-align: center;
+       }
+       .form-group {
+           margin-bottom: 15px;
+       }
+
+       label {
+           display: block;
+           margin-bottom: 5px;
+           color: #666;
+       }
+
+       input {
+           width: 100%;
+           padding: 8px;
+           margin-bottom: 10px;
+           box-sizing: border-box;
+       }
+       .message
+        {
+           text-align: center;
+           color:green;
+       }
+       .error{
+        text-align: center;
+           color:red;
+       }
+       button {
+           padding: 10px 15px;
+           border: 1px solid black;
+           border-radius: 4px;
+           cursor: pointer;
+       }
+       .register{
+           text-align:center
+       }

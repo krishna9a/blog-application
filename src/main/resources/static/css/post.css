@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid black;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header div {
+    display: flex;
+    align-items: center;
+}
+
+header a {
+    text-decoration: none;
+    color: black;
+    padding: 8px;
+    border: 1px solid black;
+    margin: 0px 10px;
+}
+
+
+section {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid black;
+}
+
+#title {
+    text-align: center;
+    margin: 0;
+}
+
+#blogInfo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.blogContent {
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.tags {
+    margin-top: 20px;
+    border-top: 1px solid black;
+    padding-top: 10px;
+}
+
+.tag {
+    border: 1px solid black;
+    padding: 5px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+
+form {
+    margin-top: 20px;
+}
+
+form input {
+    margin-bottom: 10px;
+}
+
+form button {
+    padding: 8px 16px;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.comment {
+    border-top: 1px solid black;
+    padding: 10px;
+}
+
+.comment p {
+    margin: 5px 10px 5px 0px;
+}
+
+.comment-field{
+    display: flex;
+    flex-direction: row;
+
+}
+.user-name{
+    font-size: 20px;
+    font-weight: 200;
+
+}
+.comment-field a {
+    text-decoration: none;
+    color: black;
+    margin: 5px 10px 5px 0px;
+    padding: 1px 2px;
+    border: 1px solid black;
+}

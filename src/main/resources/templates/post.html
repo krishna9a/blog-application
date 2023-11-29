@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <link type="text/css" rel="stylesheet" th:href="@{../css/post.css}">
+</head>
+
+<body>
+<header>
+    <h1> Blog </h1>
+    <div th:if="${user} != null ">
+        <div th:if="${userHasPost} or ${user.role}== 'ADMIN'">
+            <a  th:href="@{/edit-post/{id}(id=${post.id})}">Edit</a>
+            <a  th:href="@{/delete-post/{id}(id=${post.id})}">Delete</a>
+        </div>
+        <a th:href="@{/logout}">Logout</a>
+        <a th:href="@{/}">Home</a>
+    </div>
+
+    <div th:if="${user}==null">
+        <a  th:href="@{/login}">Login</a>
+        <a th:href="@{/}">Home</a>
+    </div>
+</header>
+
+<section>
+    <h1 id="title" th:text="${post.title}"></h1>
+    <div id="blogInfo">
+        <span th:text="${post.author}"></span>
+        <span th:text="${#temporals.format(post.publishedAt, 'dd/MM/yyyy')}"></span>
+    </div>
+    <p class="blogContent" th:text="${post.content}"></p>
+    <div class="tags">
+        <span th:text="'Tags: '"></span>
+        <span class="tag" th:each="tag: ${post.tags}" th:text="${tag.name}"></span>
+    </div>
+</section>
+
+<form th:action="@{/add-comment/{postId}(postId=${post.id})}" method="post">
+    Name:
+    <input type="text" name="name" >
+    Email:
+    <input type="email" name="email">
+    Comment:
+    <input type="text" name="commentContent">
+    <button type="submit">Comment</button>
+</form>
+
+<div th:each="comment: ${post.comments}" class="comment">
+    <div class="comment-field">
+        <p class="user-name" th:text="${comment.name}"></p>
+        <p th:text="${#temporals.format(comment.updatedAt, 'dd/MM/yyyy')}"></p>
+    </div>
+    <div class="comment-field">
+        <p th:text="${comment.commentContent}"></p>
+        <div th:if=" ${user}!=null and (${userHasPost} or ${user.role}== 'ADMIN')">
+            <a th:href="@{/edit-comment/{id}(id=${comment.id})}">Edit</a>
+            <a th:href="@{/delete-comment/{id}(id=${comment.id})}">Delete</a>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

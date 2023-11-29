@@ -1,0 +1,141 @@
+   body {
+       font-family: Arial, sans-serif;
+       margin: 0;
+       padding: 0;
+   }
+
+   header {
+       padding: 10px;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       border: 1px solid black;
+   }
+
+   header h1 {
+       margin: 0;
+   }
+
+   header div {
+       display: flex;
+       align-items: center;
+   }
+
+   header a {
+       text-decoration: none;
+       color: black;
+       padding: 8px;
+       margin:0 5px;
+       border: 1px solid black;
+   }
+
+   header input {
+       padding: 8px;
+       border-radius: 5px;
+       border: 1px solid black;
+       margin-right: 10px;
+       margin-left: 10px;
+   }
+
+   header button {
+       color: black;
+       padding: 8px;
+   }
+
+   .filter-nav {
+       display: flex;
+       width: 100%;
+       justify-content: flex-end;
+   }
+
+   .dropdown {
+       position: relative;
+   }
+
+   .drop-btn {
+       margin: 5px 10px 0 10px;
+   }
+
+   .dropdown-content {
+       display: none;
+       position: absolute;
+       background-color: lightgray;
+       z-index: 1;
+       min-width: 200px;
+   }
+
+   .sort {
+       min-width: 100px;
+   }
+
+   .dropdown-content a {
+       color: black;
+       padding: 5px;
+       text-decoration: none;
+       display: block;
+   }
+
+   .dropdown-content a:hover {
+       background-color: gray;
+   }
+
+   .dropdown:hover .dropdown-content {
+       display: block;
+   }
+
+   section {
+       display: flex;
+       flex-wrap: wrap;
+       justify-content: space-between;
+       padding: 10px;
+   }
+
+   .blog {
+       width: 48%;
+       box-sizing: border-box;
+       margin-bottom: 20px;
+       border: 1px solid black;
+       border-radius: 5px;
+       padding: 10px;
+   }
+
+   .blog h1 {
+       margin: 0;
+   }
+
+   .excerpt {
+       margin-bottom: 10px;
+   }
+
+   .tags {
+       border: 1px solid black;
+       padding: 5px;
+       margin: 0px 5px;
+       display: inline-block;
+   }
+
+   .read-more {
+       float: right;
+       text-decoration: none;
+       color: black;
+       border: 1px solid black;
+   }
+
+   footer {
+       padding: 10px;
+       text-align: center;
+       display: flex;
+       justify-content: space-between;
+   }
+
+   .footer-links {
+       display: flex;
+   }
+
+   .footer-links a {
+       text-decoration: none;
+       color: black;
+       margin: 0 10px;
+       border: 1px solid black;
+
+   }
