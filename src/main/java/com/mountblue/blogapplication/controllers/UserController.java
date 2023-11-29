@@ -45,6 +45,7 @@ public class UserController {
         userService.SaveNewUser(user);
         return "login";
     }
+    
     @GetMapping("/login")
     public String login() {
         return "login";
