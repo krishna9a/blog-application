@@ -26,7 +26,7 @@ public class PostService {
     }
 
 
-    public Post findPostBYId(Integer id) {
+    public Post findPostById(Integer id) {
         return postRepository.findById(id).orElse(new Post());
     }
 

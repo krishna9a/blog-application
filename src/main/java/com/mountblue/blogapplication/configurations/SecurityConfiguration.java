@@ -13,11 +13,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return  new BCryptPasswordEncoder();
@@ -43,19 +43,21 @@ public class SecurityConfiguration {
                 .authenticationProvider(getAuthenticationProvider())
                 .authorizeHttpRequests(request->request
                         .requestMatchers("/*","/css/**","/post/**","/search","/filter","/add-comment/**")
-                        .permitAll()
+                            .permitAll()
                         .requestMatchers("/api/users/my-posts","/api/users/current")
-                        .authenticated()
+                            .authenticated()
                         .requestMatchers("/api/posts/**","/api/comments/add/**","/api/tags/all","/api/users/*")
-                        .permitAll()
+                            .permitAll()
                         .requestMatchers("/registration","/registration/**")
-                        .permitAll()
+                            .permitAll()
                         .anyRequest()
-                        .authenticated()
+                            .authenticated()
                 )
-                .formLogin(form-> form.loginPage("/login")
-                    .usernameParameter("email")
-                    .loginProcessingUrl("/").permitAll()
+                .formLogin(form-> form
+                        .loginPage("/login")
+                        .usernameParameter("email")
+                        .loginProcessingUrl("/")
+                        .permitAll()
                  )
                 .logout(LogoutConfigurer::permitAll);
 

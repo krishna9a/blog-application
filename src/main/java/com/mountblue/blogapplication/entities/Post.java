@@ -12,16 +12,23 @@ import java.util.Set;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "title")
     private String title;
-    @Column(length = 250)
+    @Column(name = "excerpt",length = 250)
     private String excerpt;
-    @Column(length = 10000)
+    @Column(name="content", length = 10000)
     private String content;
+    @Column(name = "author")
     private String author;
+    @Column(name = "published_at")
     private LocalDateTime publishedAt;
+    @Column(name = "is_published")
     private boolean isPublished;
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 

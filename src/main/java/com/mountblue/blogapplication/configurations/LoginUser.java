@@ -10,14 +10,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoginUser {
 
+    private final UserService userService;
+
     @Autowired
-    private  UserService userService ;
+    public LoginUser(UserService userService) {
+        this.userService = userService;
+    }
 
     public  User getDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username=authentication.getName();
-        System.out.println(username);
-        User user= userService.findUserByUsername(username);
-        return user ;
+        String email=authentication.getName();
+        User user= userService.findUserByEmail(email);
+        return user;
     }
 }

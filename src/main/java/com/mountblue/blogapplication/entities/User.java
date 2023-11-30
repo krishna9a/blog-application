@@ -12,10 +12,13 @@ public class User  {
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "name",unique = true, nullable = false)
     private String name;
+    @Column(name = "email",unique = true, nullable = false)
     private String email;
+    @Column(name = "password")
     private String password;
-
+    @Column(name = "role")
     private String role;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)

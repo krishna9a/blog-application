@@ -19,11 +19,12 @@ import java.util.List;
 
 @Controller
 public class CommentController {
-
+    private static final String ADMIN_ROLE = "ADMIN";
     private final CommentService commentService;
     private  final PostService postService;
 
     private  final LoginUser loginUser;
+
 
     @Autowired
     public CommentController(CommentService commentService, PostService postService, LoginUser loginUser) {
@@ -33,8 +34,8 @@ public class CommentController {
     }
 
     @PostMapping("/add-comment/{postId}")
-    public  String addNewComment(@PathVariable Integer postId, @ModelAttribute Comment comment){
-        Post post=postService.findPostBYId(postId);
+    public  String addComment(@PathVariable Integer postId, @ModelAttribute Comment comment){
+        Post post=postService.findPostById(postId);
 
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
@@ -54,7 +55,7 @@ public class CommentController {
         Post post = comment.getPost();
         User currentUser= loginUser.getDetails();
 
-        if(currentUser.getRole().equals("ADMIN")||currentUser.getPosts().contains(post)) {
+        if(currentUser.getRole().equals(ADMIN_ROLE)||currentUser.getPosts().contains(post)) {
             model.addAttribute("post", comment.getPost());
             model.addAttribute("commentId", id);
             return "edit-comment";
@@ -64,7 +65,7 @@ public class CommentController {
     }
 
     @PostMapping("/update-comment")
-    public String saveUpdateComment( Integer id,String content){
+    public String updateComment(Integer id,String content){
        Comment comment=commentService.findCommentById(id);
        comment.setCommentContent(content);
        commentService.saveComment(comment);
@@ -77,7 +78,7 @@ public class CommentController {
         Comment comment = commentService.findCommentById(id);
         Post post = comment.getPost();
         User currentUser = loginUser.getDetails();
-        if (currentUser.getRole().equals("ADMIN") || currentUser.getPosts().contains(post)) {
+        if (currentUser.getRole().equals(ADMIN_ROLE) || currentUser.getPosts().contains(post)) {
             commentService.deleteCommentById(id);
 
         }

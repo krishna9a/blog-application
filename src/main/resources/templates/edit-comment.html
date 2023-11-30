@@ -6,7 +6,6 @@
     <title>Blog</title>
     <link type="text/css" rel="stylesheet" th:href="@{../css/post.css}">
 </head>
-
 <body>
 <header>
     <h1>Blog</h1>
@@ -33,7 +32,7 @@
     <div class="comment-field" th:if="${comment.id == commentId}">
         <form th:action="@{/update-comment}" method="post">
             <input type="hidden" name="id" th:value="${comment.id}">
-            <input type="text" name="content" th:value="${comment.commentContent}">
+            <input type="text" name="content" th:value="${comment.commentContent}" required>
             <button type="submit">Update</button>
         </form>
     </div>

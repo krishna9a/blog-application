@@ -54,7 +54,7 @@ public class RestPostController {
 
     @GetMapping("/{id}")
     public Post getPost(@PathVariable Integer id) {
-        return postService.findPostBYId(id);
+        return postService.findPostById(id);
     }
 
     @PostMapping("/create")
@@ -83,7 +83,7 @@ public class RestPostController {
     @PutMapping("/update/{id}")
     public String updatePost(@PathVariable Integer id, @RequestBody Post updatedPost,
                              @RequestParam("postTags") String postTags) {
-        Post post = postService.findPostBYId(id);
+        Post post = postService.findPostById(id);
         User currentUser= loginUser.getDetails();
         if(currentUser.getRole().equals("ADMIN")||currentUser.getPosts().contains(post)) {
             post.setTitle(updatedPost.getTitle());
@@ -105,7 +105,7 @@ public class RestPostController {
     @DeleteMapping("/delete/{id}")
     public String deletePost(@PathVariable Integer id) {
         User currentUser= loginUser.getDetails();
-        Post post=postService.findPostBYId(id);
+        Post post=postService.findPostById(id);
         if(currentUser.getRole().equals("ADMIN")||currentUser.getPosts().contains(post)) {
             postService.deletePostById(id);
             tagService.removeUnusedTags();
@@ -113,26 +113,25 @@ public class RestPostController {
         }
         return "Unauthorized";
     }
-    public void createTags( Post post, String postTags) {
+    private void createTags( Post post, String postTags) {
         String[] tagList = postTags.split(",");
 
         Set<Tag> tags = post.getTags();
         for (String tagName : tagList) {
             tagName = tagName.trim();
-            if (tagName.isEmpty()) {
-                continue;
-            }
-            Tag tag = tagService.findTagByName(tagName);
-            if (tag == null) {
-                tag = new Tag(tagName);
-            }
+            if (!tagName.isEmpty()) {
+                Tag tag = tagService.findTagByName(tagName);
+                if (tag == null) {
+                    tag = new Tag(tagName);
+                }
 
-            List<Post> posts = tag.getPosts();
-            posts.add(post);
-            tag.setPosts(posts);
-            tags.add(tag);
+                List<Post> posts = tag.getPosts();
+                posts.add(post);
+                tag.setPosts(posts);
+                tags.add(tag);
 
-            tagService.saveTag(tag);
+                tagService.saveTag(tag);
+            }
         }
         post.setTags(tags);
     }

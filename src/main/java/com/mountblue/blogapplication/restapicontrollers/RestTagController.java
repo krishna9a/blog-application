@@ -19,7 +19,7 @@ public class RestTagController {
     }
 
     @GetMapping("/all")
-    public List<Tag> getAllTags() {
+    public List<Tag> getTags() {
         return tagService.findAllTags();
     }
 

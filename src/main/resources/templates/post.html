@@ -11,7 +11,7 @@
 <header>
     <h1> Blog </h1>
     <div th:if="${user} != null ">
-        <div th:if="${userHasPost} or ${user.role}== 'ADMIN'">
+        <div th:if="${hasPost} or ${user.role}== 'ADMIN'">
             <a  th:href="@{/edit-post/{id}(id=${post.id})}">Edit</a>
             <a  th:href="@{/delete-post/{id}(id=${post.id})}">Delete</a>
         </div>
@@ -40,11 +40,11 @@
 
 <form th:action="@{/add-comment/{postId}(postId=${post.id})}" method="post">
     Name:
-    <input type="text" name="name" >
+    <input type="text" name="name" required>
     Email:
-    <input type="email" name="email">
+    <input type="email" name="email" required>
     Comment:
-    <input type="text" name="commentContent">
+    <input type="text" name="commentContent" required>
     <button type="submit">Comment</button>
 </form>
 
@@ -55,7 +55,7 @@
     </div>
     <div class="comment-field">
         <p th:text="${comment.commentContent}"></p>
-        <div th:if=" ${user}!=null and (${userHasPost} or ${user.role}== 'ADMIN')">
+        <div th:if=" ${user}!=null and (${hasPost} or ${user.role}== 'ADMIN')">
             <a th:href="@{/edit-comment/{id}(id=${comment.id})}">Edit</a>
             <a th:href="@{/delete-comment/{id}(id=${comment.id})}">Delete</a>
         </div>

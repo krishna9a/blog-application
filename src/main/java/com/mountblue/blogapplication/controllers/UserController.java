@@ -16,14 +16,15 @@ import java.util.List;
 
 @Controller
 public class UserController {
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final LoginUser loginUser;
     @Autowired
-    private  UserService userService;
-
-    @Autowired
-    private  PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private  LoginUser loginUser;
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, LoginUser loginUser) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.loginUser = loginUser;
+    }
 
     @GetMapping("/registration")
     public String registration(Model model) {
@@ -35,7 +36,7 @@ public class UserController {
     public String saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.SaveNewUser(user);
-        return "login";
+        return "redirect:/login";
     }
     @GetMapping("/login")
     public String login() {

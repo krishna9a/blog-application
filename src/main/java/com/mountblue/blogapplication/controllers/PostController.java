@@ -48,11 +48,12 @@ public class PostController {
         if(page<0){
             return "redirect:/";
         }
-        int pageLimit = 6;
+        int postsPerPage = 6;
+
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, pageLimit, Sort.by(direction, "publishedAt"));
+        Pageable pageable = PageRequest.of(page, postsPerPage, Sort.by(direction, "publishedAt"));
         Page<Post> pagePosts = postService.getAllPostsPaged(pageable);
 
         if(pagePosts.getTotalPages()!=0 && pagePosts.getTotalPages()<=page){
@@ -60,7 +61,7 @@ public class PostController {
         }
 
         List<Post> posts = pagePosts.getContent();
-        allTagsAuthors(model);
+        populateModelAttributes(model);
         model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("sort",sort);
         model.addAttribute("posts", posts);
@@ -102,15 +103,9 @@ public class PostController {
 
     @GetMapping("/post/{id}")
     public String showPost(@PathVariable Integer id,Model model){
-        Post post=postService.findPostBYId(id);
-        User user= loginUser.getDetails();
-        boolean hasPost=false;
-
-        if(user != null)
-        {
-           hasPost=user.getPosts().contains(post);
-        }
-
+        Post post = postService.findPostById(id);
+        User user = loginUser.getDetails();
+        boolean hasPost = user != null && user.getPosts().contains(post);
         model.addAttribute("hasPost",hasPost);
         model.addAttribute("user",user);
         model.addAttribute("post",post);
@@ -120,7 +115,7 @@ public class PostController {
 
     @GetMapping("/edit-post/{id}")
     public  String editPost(@PathVariable Integer id, Model model) {
-        Post post=postService.findPostBYId(id);
+        Post post=postService.findPostById(id);
         Set<Tag> tags=post.getTags();
         String postTags="";
 
@@ -162,11 +157,11 @@ public class PostController {
         if(page<0){
             return "redirect:/";
         }
-        int pageLimit = 6;
+        int postsPerPage = 6;
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, pageLimit, Sort.by(direction, "publishedAt"));
+        Pageable pageable = PageRequest.of(page, postsPerPage, Sort.by(direction, "publishedAt"));
         Page<Post> filterPosts = postService.findPostsByFilters(selectedTags, selectedAuthors,
                 pageable);
 
@@ -183,7 +178,7 @@ public class PostController {
         url+="&";
 
         List<Post> posts = filterPosts.getContent();
-        allTagsAuthors(model);
+        populateModelAttributes(model);
         model.addAttribute("url",url);
         model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("posts",posts);
@@ -199,16 +194,16 @@ public class PostController {
         if(page<0){
             return "redirect:/";
         }
-        int pageLimit = 6;
+        int postsPerPage = 6;
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, pageLimit, Sort.by(direction, "publishedAt"));
+        Pageable pageable = PageRequest.of(page, postsPerPage, Sort.by(direction, "publishedAt"));
 
         Page<Post> pagePosts = postService.findPostsByKeywords(keyword,pageable);
 
         List<Post> posts = pagePosts.getContent();
-        allTagsAuthors(model);
+        populateModelAttributes(model);
         model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("keyword",keyword);
         model.addAttribute("sort",sort);
@@ -220,33 +215,32 @@ public class PostController {
     }
 
 
-    public void allTagsAuthors(Model model){
+    private void populateModelAttributes(Model model){
         List<Tag> tags = tagService.findAllTags();;
         List<String> authors = userService.findAllNames();;
         model.addAttribute("authors", authors);
         model.addAttribute("tags", tags);
     }
 
-    public void createTags( Post post, String postTags) {
+    private void createTags( Post post, String postTags) {
         String[] tagList = postTags.split(",");
-
         Set<Tag> tags = post.getTags();
+
         for (String tagName : tagList) {
             tagName = tagName.trim();
-            if (tagName.isEmpty()) {
-                continue;
-            }
-            Tag tag = tagService.findTagByName(tagName);
-            if (tag == null) {
-                tag = new Tag(tagName);
-            }
+            if (!tagName.isEmpty()) {
+                Tag tag = tagService.findTagByName(tagName);
+                if (tag == null) {
+                    tag = new Tag(tagName);
+                }
 
-            List<Post> posts = tag.getPosts();
-            posts.add(post);
-            tag.setPosts(posts);
-            tags.add(tag);
+                List<Post> posts = tag.getPosts();
+                posts.add(post);
+                tag.setPosts(posts);
+                tags.add(tag);
 
-            tagService.saveTag(tag);
+                tagService.saveTag(tag);
+            }
         }
         post.setTags(tags);
     }

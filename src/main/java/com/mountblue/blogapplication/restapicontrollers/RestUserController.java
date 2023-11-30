@@ -14,20 +14,23 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class RestUserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
+    private final PasswordEncoder passwordEncoder;
+    private final LoginUser loginUser;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private LoginUser loginUser;
+    public RestUserController(UserService userService, PasswordEncoder passwordEncoder, LoginUser loginUser) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.loginUser = loginUser;
+    }
 
     @GetMapping("/current")
     public User getCurrentUser() {
         return loginUser.getDetails();
     }
     @GetMapping("/registration")
-    public User getRegistrationFrom(){
+    public User getRegistration(){
         return new User();
     }
     @PostMapping("/registration")
@@ -44,7 +47,7 @@ public class RestUserController {
     }
 
     @GetMapping("/authors")
-    public List<String> getAllAuthorsNames() {
+    public List<String> getAuthorsNames() {
         return userService.findAllNames();
     }
 }

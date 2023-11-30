@@ -28,8 +28,8 @@ public class RestCommentController {
     }
 
     @PostMapping("/add/{postId}")
-    public String addNewComment(@PathVariable Integer postId, @RequestBody Comment comment) {
-        Post post = postService.findPostBYId(postId);
+    public String addComment(@PathVariable Integer postId, @RequestBody Comment comment) {
+        Post post = postService.findPostById(postId);
 
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
@@ -43,12 +43,12 @@ public class RestCommentController {
     }
 
     @GetMapping("/edit/{id}")
-    public Comment showEditCommentPage(@PathVariable Integer id) {
+    public Comment editComment(@PathVariable Integer id) {
         return commentService.findCommentById(id);
     }
 
     @PutMapping("/update/{id}")
-    public String saveUpdateComment(@PathVariable Integer id, @RequestBody Comment updatedComment) {
+    public String updateComment(@PathVariable Integer id, @RequestBody Comment updatedComment) {
 
         Comment comment = commentService.findCommentById(id);
 

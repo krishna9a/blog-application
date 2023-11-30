@@ -34,20 +34,18 @@
 
   <div class="form-group">
     <label for="publishedAt">Published At:</label>
-    <input type="datetime-local" id="publishedAt" name="publishedAt" th:value="*{publishedAt}"  required />
+    <input type="datetime-local" id="publishedAt" name="publishedAt"  th:value="*{publishedAt}"  required />
   </div>
 
   <div class="form-group">
     <label for="content">Content:</label>
-    <textarea id="content" name="content" rows="8"  th:field="*{content}"></textarea>
+    <textarea id="content" name="content" rows="8"  th:field="*{content}" required></textarea>
   </div>
-
 
   <div class="form-group">
     <label for="tags">Tags (comma-separated): </label>
-    <input type="text" id="tags" name="postTags" th:value="${postTags}">
+    <input type="text" id="tags" name="postTags" th:value="${postTags}" required>
   </div>
-
 
   <button type="submit">Update Post</button>
 </form>
