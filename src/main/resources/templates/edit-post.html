@@ -18,7 +18,6 @@
 
 <form th:action="@{/save-edit-post}" method="post" th:object="${post}">
   <input type="hidden" name="id" th:field="*{id}">
-  <input type="hidden" name="publishedAt" th:field="*{publishedAt}">
   <input type="hidden" name="isPublished" th:field="*{isPublished}">
   <input type="hidden" name="createdAt" th:field="*{createdAt}">
   <div class="header">
