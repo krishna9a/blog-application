@@ -18,7 +18,6 @@ public class CustomUser implements UserDetails {
         this.user = user;
     }
 
-
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         return   Arrays.stream(user.getRole().split(","))

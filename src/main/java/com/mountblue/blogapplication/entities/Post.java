@@ -24,9 +24,11 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id")
     private List<Comment> comments = new ArrayList<>();
+
 
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.DETACH,CascadeType.MERGE})
     @JoinTable(

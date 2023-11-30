@@ -1,5 +1,6 @@
 package com.mountblue.blogapplication.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class Tag {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "tags")
     private List<Post> posts = new ArrayList<>();
 

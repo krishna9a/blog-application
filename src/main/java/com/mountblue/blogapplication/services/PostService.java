@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
-
     @Autowired
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
@@ -24,6 +24,7 @@ public class PostService {
         post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
     }
+
 
     public Post findPostBYId(Integer id) {
         return postRepository.findById(id).orElse(new Post());
@@ -37,20 +38,16 @@ public class PostService {
         return postRepository.findAll(pageable);
     }
 
-    public List<String> findAllAuthorsName() {
-        return postRepository.findAllAuthors();
-    }
-
     public Page<Post> findPostsByFilters(
             List<Integer> selectedTags,
             List<String> selectedAuthors,
             Pageable pageable) {
 
         return postRepository.findByTagIdsAndAuthors(selectedTags, selectedAuthors,
-                pageable);
+               pageable);
     }
 
     public Page<Post> findPostsByKeywords(String keyword, Pageable pageable) {
-        return postRepository.findPostsByKeywords(keyword, pageable);
+        return postRepository.findPostsByKeywords(keyword,pageable);
     }
 }

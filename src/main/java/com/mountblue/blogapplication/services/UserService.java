@@ -24,7 +24,6 @@ public class UserService {
         return userRepository.findByEmail(username);
     }
 
-
     public List<String> findAllNames() {
         return userRepository.findAllUserNames();
     }

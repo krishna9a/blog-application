@@ -1,9 +1,12 @@
 package com.mountblue.blogapplication.controllers;
 
+import com.mountblue.blogapplication.configurations.LoginUser;
 import com.mountblue.blogapplication.entities.Post;
 import com.mountblue.blogapplication.entities.Tag;
 import com.mountblue.blogapplication.entities.User;
 import com.mountblue.blogapplication.services.PostService;
+import com.mountblue.blogapplication.services.TagService;
+import com.mountblue.blogapplication.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,16 +25,19 @@ import java.util.stream.Collectors;
 public class PostController {
 
     private final PostService postService;
-    private final TagController tagController;
+    private final TagService tagService;
+    private final UserService userService;
+    private final LoginUser loginUser;
 
-    private final UserController userController;
+
     @Autowired
-    public PostController(PostService postService, TagController tagController, UserController userController) {
+    public PostController(PostService postService, TagService tagService, UserService userService,
+                          LoginUser loginUser) {
         this.postService = postService;
-        this.tagController = tagController;
-        this.userController = userController;
+        this.tagService = tagService;
+        this.userService = userService;
+        this.loginUser = loginUser;
     }
-
 
 
 
@@ -42,21 +48,20 @@ public class PostController {
         if(page<0){
             return "redirect:/";
         }
-        int numberOfPosts = 6;
+        int pageLimit = 6;
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, numberOfPosts, Sort.by(direction, "publishedAt"));
-        Page<Post> postsPage = postService.getAllPostsPaged(pageable);
+        Pageable pageable = PageRequest.of(page, pageLimit, Sort.by(direction, "publishedAt"));
+        Page<Post> pagePosts = postService.getAllPostsPaged(pageable);
 
-        if(postsPage.getTotalPages()!=0&&postsPage.getTotalPages()<=page){
+        if(pagePosts.getTotalPages()!=0 && pagePosts.getTotalPages()<=page){
             return "redirect:/";
         }
 
-        List<Post> posts = postsPage.getContent();
-        findAllTagsAuthors(model);
-
-        model.addAttribute("user",userController.getUser());
+        List<Post> posts = pagePosts.getContent();
+        allTagsAuthors(model);
+        model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("sort",sort);
         model.addAttribute("posts", posts);
         model.addAttribute("currentPage", page);
@@ -65,22 +70,23 @@ public class PostController {
     }
 
     @GetMapping("/create-post")
-    public String showCreatePostForm(Model model) {
-        model.addAttribute("post", new Post());
-        return "new-post";
+    public String createPost(Model model) {
+        if(loginUser.getDetails()!=null) {
+            model.addAttribute("post", new Post());
+            return "new-post";
+        }
+        return "redirect:/";
     }
 
     @PostMapping("/save-post")
     public String saveNewPost(@ModelAttribute Post post,@RequestParam("postTags") String postTags) {
-
         post.setCreatedAt(LocalDateTime.now());
         post.setIsPublished(true);
-
         String content=post.getContent();
         String excerpt=content.substring(0,Math.min(250,content.length()));
         post.setExcerpt(excerpt);
 
-        User user= userController.getUser();
+        User user= loginUser.getDetails();
         post.setAuthor(user.getName());
 
         List<Post> posts=user.getPosts();
@@ -88,8 +94,8 @@ public class PostController {
         user.setPosts(posts);
 
         postService.savePost(post);
-        tagController.createAndSaveTags(post,postTags);
-        tagController.findAndRemoveUnusedTags();
+        createTags(post,postTags);
+        tagService.removeUnusedTags();
 
         return "redirect:/";
     }
@@ -97,16 +103,15 @@ public class PostController {
     @GetMapping("/post/{id}")
     public String showPost(@PathVariable Integer id,Model model){
         Post post=postService.findPostBYId(id);
-        User user=userController.getUser();
+        User user= loginUser.getDetails();
+        boolean hasPost=false;
 
-        boolean userHasPost=false;
         if(user != null)
         {
-           userHasPost=user.getPosts().contains(post);
-            System.out.println(userHasPost);
+           hasPost=user.getPosts().contains(post);
         }
 
-        model.addAttribute("userHasPost",userHasPost);
+        model.addAttribute("hasPost",hasPost);
         model.addAttribute("user",user);
         model.addAttribute("post",post);
 
@@ -114,17 +119,16 @@ public class PostController {
     }
 
     @GetMapping("/edit-post/{id}")
-    public  String showEditPostFrom(@PathVariable Integer id, Model model) {
+    public  String editPost(@PathVariable Integer id, Model model) {
         Post post=postService.findPostBYId(id);
-
         Set<Tag> tags=post.getTags();
-
         String postTags="";
+
         for(Tag tag:tags){
             postTags += tag.getName()+" , ";
         }
 
-        model.addAttribute("user",userController.getUser());
+        model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("postTags",postTags);
         model.addAttribute("post", post);
 
@@ -132,28 +136,25 @@ public class PostController {
     }
     @PostMapping("/save-edit-post")
     public String saveEditPost(@ModelAttribute Post post,@RequestParam("postTags") String postTags) {
-
         String content=post.getContent();
         String excerpt=content.substring(0,Math.min(250,content.length()));
         post.setExcerpt(excerpt);
 
-        System.out.println(post.toString());
-
-        tagController.createAndSaveTags(post,postTags);
+        createTags(post,postTags);
         postService.savePost(post);
-        tagController.findAndRemoveUnusedTags();
+        tagService.removeUnusedTags();
 
         return "redirect:/post/"+post.getId();
     }
     @GetMapping("/delete-post/{id}")
     public String deletePost(@PathVariable Integer id){
-
         postService.deletePostById(id);
-        tagController.findAndRemoveUnusedTags();
+        tagService.removeUnusedTags();
+
         return "redirect:/";
     }
     @GetMapping("/filter")
-    public String findFilterPost(
+    public String filterPosts(
             @RequestParam(name = "tags", required = false) List<Integer> selectedTags,
             @RequestParam(name = "authors", required = false) List<String> selectedAuthors,
             @RequestParam(defaultValue = "0") int page,
@@ -161,12 +162,12 @@ public class PostController {
         if(page<0){
             return "redirect:/";
         }
-        int numberOfPosts = 6;
+        int pageLimit = 6;
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, numberOfPosts, Sort.by(direction, "publishedAt"));
-        Page<Post> filteredPosts = postService.findPostsByFilters(selectedTags, selectedAuthors,
+        Pageable pageable = PageRequest.of(page, pageLimit, Sort.by(direction, "publishedAt"));
+        Page<Post> filterPosts = postService.findPostsByFilters(selectedTags, selectedAuthors,
                 pageable);
 
         String url="/filter?";
@@ -181,11 +182,10 @@ public class PostController {
         }
         url+="&";
 
-        List<Post> posts=filteredPosts.getContent();
-        findAllTagsAuthors(model);
+        List<Post> posts = filterPosts.getContent();
+        allTagsAuthors(model);
         model.addAttribute("url",url);
-        model.addAttribute("user",userController.getUser());
-        model.addAttribute("sort",sort);
+        model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("posts",posts);
         model.addAttribute("currentPage", page);
 
@@ -193,36 +193,61 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public  String findPostsByKeywords(@RequestParam(defaultValue = "0") int page,
+    public  String searchPosts(@RequestParam(defaultValue = "0") int page,
                                        @RequestParam(defaultValue = "desc")String sort,
                                        @RequestParam  String keyword,Model model){
         if(page<0){
             return "redirect:/";
         }
-        int numberOfPosts = 6;
+        int pageLimit = 6;
 
         Sort.Direction direction = sort.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, numberOfPosts, Sort.by(direction, "publishedAt"));
+        Pageable pageable = PageRequest.of(page, pageLimit, Sort.by(direction, "publishedAt"));
 
-        Page<Post>postsPage=postService.findPostsByKeywords(keyword,pageable);
+        Page<Post> pagePosts = postService.findPostsByKeywords(keyword,pageable);
 
-        List<Post> posts=postsPage.getContent();
-        findAllTagsAuthors(model);
-        model.addAttribute("user",userController.getUser());
+        List<Post> posts = pagePosts.getContent();
+        allTagsAuthors(model);
+        model.addAttribute("user", loginUser.getDetails());
         model.addAttribute("keyword",keyword);
         model.addAttribute("sort",sort);
         model.addAttribute("posts", posts);
         model.addAttribute("currentPage", page);
         model.addAttribute("url","/search?keyword="+keyword+"&");
+
         return "home";
     }
 
 
-    public void findAllTagsAuthors(Model model){
-        List<Tag> tags = tagController.findAllTags();
-        List<String> authors = userController.findAllAuthorsName();
+    public void allTagsAuthors(Model model){
+        List<Tag> tags = tagService.findAllTags();;
+        List<String> authors = userService.findAllNames();;
         model.addAttribute("authors", authors);
         model.addAttribute("tags", tags);
+    }
+
+    public void createTags( Post post, String postTags) {
+        String[] tagList = postTags.split(",");
+
+        Set<Tag> tags = post.getTags();
+        for (String tagName : tagList) {
+            tagName = tagName.trim();
+            if (tagName.isEmpty()) {
+                continue;
+            }
+            Tag tag = tagService.findTagByName(tagName);
+            if (tag == null) {
+                tag = new Tag(tagName);
+            }
+
+            List<Post> posts = tag.getPosts();
+            posts.add(post);
+            tag.setPosts(posts);
+            tags.add(tag);
+
+            tagService.saveTag(tag);
+        }
+        post.setTags(tags);
     }
 }

@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-
-
     @Query("SELECT u.name FROM User u")
     List<String> findAllUserNames();
 

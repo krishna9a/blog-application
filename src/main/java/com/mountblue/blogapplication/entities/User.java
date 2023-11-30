@@ -1,9 +1,9 @@
 package com.mountblue.blogapplication.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @Table(name = "users")
@@ -17,7 +17,7 @@ public class User  {
     private String password;
 
     private String role;
-
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     List<Post> posts=new ArrayList<>();
